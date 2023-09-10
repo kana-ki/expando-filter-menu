@@ -1,6 +1,5 @@
 import './App.css';
-import {useState} from "react";
-import { debounce } from "debounce";
+import {FilterMenu} from "./FilterMenu";
 
 const filters = [
     {
@@ -110,39 +109,10 @@ const filters = [
 function App() {
   return (
     <div className="App">
-        <FilterMenu options={filters} onFilter={filter => filter() } />
+        <FilterMenu options={filters} />
     </div>
   );
 }
 
-function FilterMenu(props) {
-    const options = props.options;
-    const onFilter = props.onFilter && debounce(props.onFilter);
-    const [active, setActive] = useState(-1);
-    return (<ul>
-    { options.map((o, i) =>
-        <li key={o.name} className={active === i && "active"}>
-            <span className="name"
-                  onClick={_ => {
-                      setActive(active === i ? -1 : i);
-                      onFilter(buildFilterFn([ { active, filter: o.filter }]));
-                  }}>
-                {o.name}
-            </span>
-            {active === i && o.options && <FilterMenu options={o.options} /> }
-        </li>)}
-    </ul>);
-}
-
-function buildFilterFn(filters) {
-    return v => {
-        for (let filter of filters) {
-            if (filter.active) {
-
-            }
-        }
-    }
-
-}
 
 export default App;
