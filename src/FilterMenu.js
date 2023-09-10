@@ -1,41 +1,52 @@
 import React, { useState, useEffect } from 'react';
 
 export function FilterMenu(props) {
-  const { options, onFilter, style, parentActive } = props;
   const [open, setOpen] = useState(-1);
-  const [active, setActive] = useState([]);
+  const [activeOptions, setActiveOptions] = useState([]);
+  const [activeStack, setActiveStack ] = useState(props.activeStack || -1);
+
+  const key = props.stackKey === undefined ? 0 : props.stackKey;
 
   const onActivate = (o, i) => {
-    const newActive = [...active];
-    newActive[i] = active[i] === undefined ? o.filter : undefined;
-    setActive(newActive);
-    if (onFilter) onFilter(newActive.filter(f => f !== undefined));
+    const newActive = [...activeOptions];
+    newActive[i] = activeOptions[i] === undefined ? o.filter : undefined;
+    setActiveOptions(newActive);
+    const activeFilters = newActive.filter(f => f !== undefined);
+    if (props.onFilter)
+      props.onFilter({
+        stackKey: key,
+        filters:activeFilters
+      });
+    if (activeFilters.length > 0)
+      setActiveStack(key);
   };
 
-  const onChildActivate = (childFilters) => {
-    setActive([]);
-    if (onFilter) onFilter(childFilters);
+  const onChildActivate = (filterData) => {
+    setActiveOptions([]);
+    setActiveStack(filterData.stackKey);
+    if (props.onFilter) props.onFilter(filterData);
   };
 
   useEffect(() => {
-    if (parentActive) setActive([]);
-  }, [parentActive]);
+    if (props.activeStack !== key) setActiveOptions([]);
+  }, [props.activeStack]);
 
   return (
-      <ul style={style}>
-        {options.map((option, i) => (
-            <li key={option.name} className={active[i] !== undefined ? 'active' : undefined}>
+      <ul style={props.style}>
+        {props.options.map((option, i) => (
+            <li key={option.name} className={activeOptions[i] !== undefined ? 'active' : undefined}>
               {open === i && <span className="expand" onClick={() => setOpen(-1)}>&lt;</span>}
               <span className="name" onClick={() => onActivate(option, i)}>{option.name}</span>
               {open !== i && option.options && <span className="expand" onClick={() => setOpen(i)}>&gt;</span>}
-              {option.options && (
+              {option.options &&
                   <FilterMenu
-                      style={open !== i ? { display: 'none' } : undefined}
+                      stackKey={key+"."+i}
+                      style={open !== i ? {...props.style, display: 'none' } : props.style}
                       options={option.options}
                       onFilter={onChildActivate}
-                      parentActive={active[i] !== undefined}
+                      activeStack={activeStack}
                   />
-              )}
+              }
             </li>
         ))}
       </ul>
