@@ -1,5 +1,6 @@
 import './App.css';
 import {FilterMenu} from "./FilterMenu";
+import globeIcon from "./globe.svg";
 
 const filters = [
     {
@@ -108,8 +109,20 @@ const filters = [
 
 function App() {
   return (
-    <div className="App">
-        <FilterMenu options={filters} />
+    <div className="App" style={{
+        height: "100vh",
+        width: "200px",
+        backgroundColor: "#242424",
+        borderLeft: "solid 1px #2F2F2F",
+        borderRight: "solid 1px #2F2F2F",
+        marginLeft: 20,
+        paddingTop: 30,
+        boxShadow: "#181818 0 0 3px"
+    }}>
+        <FilterMenu heading={{
+            name: "All regions",
+            icon: globeIcon
+        }} options={filters} />
     </div>
   );
 }
